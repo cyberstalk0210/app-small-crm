@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/cyberstalk0210/app-small-crm.git'
+                git credentialsId: 'credentials' , url: 'https://github.com/cyberstalk0210/app-small-crm.git'
             }
         }
 
