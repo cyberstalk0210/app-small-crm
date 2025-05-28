@@ -1,31 +1,42 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE_NAME = "crm-backend"
-        DOCKER_COMPOSE_PATH = "./docker-compose.yml"
+    tools {
+        jdk 'JAVA_21'
     }
 
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git credentialsId: 'credentials' , url: 'https://github.com/cyberstalk0210/app-small-crm/tree/master'
+                git url: 'https://github.com/username/your-spring-boot-project.git', branch: 'master'
             }
         }
 
-        stage('Build .jar') {
+        stage('Build') {
             steps {
-                sh 'chmod +x ./gradlew'
-                sh './gradlew clean build'
+                sh './gradlew clean build --no-daemon'
             }
         }
 
-        stage('Docker Build & Up') {
+        stage('Run') {
             steps {
-                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} down"
-                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} build"
-                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} up -d"
+                sh '''
+                # Jar faylni to'xtatish uchun (agar oldin ishga tushirilgan bo'lsa)
+                pkill -f your-application.jar || true
+
+                # Jar faylni fon rejimida ishga tushirish
+                nohup java -jar build/libs/your-application.jar --server.port=8080 > app.log 2>&1 &
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build va Run muvaffaqiyatli yakunlandi!'
+        }
+        failure {
+            echo 'Xatolik yuz berdi!'
         }
     }
 }
