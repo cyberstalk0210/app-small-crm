@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE_NAME = "crm-backend"
+        DOCKER_COMPOSE_PATH = "./docker-compose.yml"
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/your-username/your-backend-repo.git'
+            }
+        }
+
+        stage('Build .jar') {
+            steps {
+                sh './gradlew clean build'
+            }
+        }
+
+        stage('Docker Build & Up') {
+            steps {
+                sh 'docker-compose down'
+                sh 'docker-compose build'
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+}
