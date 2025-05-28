@@ -9,21 +9,22 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/your-username/your-backend-repo.git'
+                git 'https://github.com/cyberstalk0210/app-small-crm.git'
             }
         }
 
         stage('Build .jar') {
             steps {
+                sh 'chmod +x ./gradlew'
                 sh './gradlew clean build'
             }
         }
 
         stage('Docker Build & Up') {
             steps {
-                sh 'docker-compose down'
-                sh 'docker-compose build'
-                sh 'docker-compose up -d'
+                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} down"
+                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} build"
+                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} up -d"
             }
         }
     }
