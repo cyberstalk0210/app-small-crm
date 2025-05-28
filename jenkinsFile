@@ -2,30 +2,33 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "crm-backend"
-        DOCKER_COMPOSE_PATH = "./docker-compose.yml"
+        JAVA_OPTS = "-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400"
+    }
+
+    tools {
+        jdk 'JAVA_21'
     }
 
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git credentialsId: 'credentials' , url: 'https://github.com/cyberstalk0210/app-small-crm'
+                git branch: 'master', url: 'https://github.com/cyberstalk0210/app-small-crm.git'
             }
         }
 
-        stage('Build .jar') {
+        stage('Build') {
             steps {
-                sh 'chmod +x ./gradlew'
-                sh './gradlew clean build'
+                sh './gradlew clean build --no-daemon'
             }
         }
+    }
 
-        stage('Docker Build & Up') {
-            steps {
-                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} down"
-                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} build"
-                sh "docker-compose -f ${DOCKER_COMPOSE_PATH} up -d"
-            }
+    post {
+        success {
+            echo '✅ Build successful!'
+        }
+        failure {
+            echo '❌ Build failed.'
         }
     }
 }
