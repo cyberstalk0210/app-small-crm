@@ -56,15 +56,17 @@ public class UserService {
         return ResponseEntity.ok(userById);
     }
 
-    public ResponseEntity<Boolean> deleteUser(Long id) {
+    public ResponseEntity<String> deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
         userRepository.deleteById(id);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok("Successfully deleted");
     }
 
-    public ResponseEntity<List<UserDTO>> getUsersList() {
-        List<User> users = userRepository.findAll();
-        List<UserDTO> userDTOList = userMapper.toDto(users);
-        return ResponseEntity.ok(userDTOList);
+
+    public ResponseEntity<List<User>> getUsersList() {
+        return ResponseEntity.ok(userRepository.findAll());
     }
 
 

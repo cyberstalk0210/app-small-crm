@@ -31,11 +31,6 @@ public class ProductController {
        return  productService.createProduct(product);
     }
 
-    @GetMapping("/getCount")
-    public ResponseEntity<DashboardStats> getDashboardStats() {
-        DashboardStats stats = dashboardService.getStats();
-        return ResponseEntity.ok(stats);
-    }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
