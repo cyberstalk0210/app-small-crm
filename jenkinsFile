@@ -22,6 +22,7 @@ pipeline {
             steps {
                 sh '''
                 # Jar faylni to'xtatish uchun (agar oldin ishga tushirilgan bo'lsa)
+
                 pkill -f your-application.jar || true
 
                 # Jar faylni fon rejimida ishga tushirish
