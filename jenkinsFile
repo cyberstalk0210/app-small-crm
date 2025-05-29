@@ -1,8 +1,9 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'JAVA_21'
+    environment {
+        DOCKER_IMAGE_NAME = "crm-backend"
+        DOCKER_COMPOSE_PATH = "./docker-compose.yml"
     }
 
     stages {
@@ -14,10 +15,10 @@ pipeline {
 
         stage('Build') {
             steps {
+                sh 'chmod +x ./gradlew'
                 sh './gradlew clean build'
             }
         }
-    }
 
     post {
         success {
