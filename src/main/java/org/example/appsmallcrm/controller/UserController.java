@@ -1,6 +1,7 @@
 package org.example.appsmallcrm.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.appsmallcrm.dto.UserDTO;
 import org.example.appsmallcrm.entity.User;
 import org.example.appsmallcrm.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -27,5 +28,14 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         return userService.deleteUser(id);
+    }
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return userService.getUserByID(id);
+    }
+
+    @PostMapping("/users/{id}")
+    public  ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+        return userService.updateUser(id, user);
     }
 }

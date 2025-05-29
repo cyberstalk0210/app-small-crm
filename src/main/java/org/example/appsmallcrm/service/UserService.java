@@ -47,13 +47,14 @@ public class UserService {
         return ResponseEntity.ok(response);
     }
 
+    public ResponseEntity<User> updateUser(Long id, User userDTO) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        user.setUsername(userDTO.getUsername());
+        user.setRole(userDTO.getRole());
 
-    public ResponseEntity<User> updateUser(Long id, UserDTO userDTO) {
-        User userById = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        userMapper.update(userById, userDTO);
-        userRepository.save(userById);
-        return ResponseEntity.ok(userById);
+        userRepository.saveAndFlush(user);
+        return ResponseEntity.ok(user);
     }
 
     public ResponseEntity<String> deleteUser(Long id) {
@@ -80,6 +81,12 @@ public class UserService {
 
         return ApiResponse.success(userMapper.toDto(user));
 
+    }
+
+    public ResponseEntity<User> getUserByID(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return  ResponseEntity.ok(user);
     }
 }
 

@@ -8,36 +8,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/username/your-spring-boot-project.git', branch: 'master'
+                git branch: 'master', url: 'https://github.com/cyberstalk0210/app-small-crm.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh './gradlew clean build --no-daemon'
-            }
-        }
-
-        stage('Run') {
-            steps {
-                sh '''
-                # Jar faylni to'xtatish uchun (agar oldin ishga tushirilgan bo'lsa)
-
-                pkill -f your-application.jar || true
-
-                # Jar faylni fon rejimida ishga tushirish
-                nohup java -jar build/libs/your-application.jar --server.port=8080 > app.log 2>&1 &
-                '''
+                sh './gradlew clean build'
             }
         }
     }
 
     post {
         success {
-            echo 'Build va Run muvaffaqiyatli yakunlandi!'
+            echo '✅ Build successful!'
         }
         failure {
-            echo 'Xatolik yuz berdi!'
+            echo '❌ Build failed.'
         }
     }
 }

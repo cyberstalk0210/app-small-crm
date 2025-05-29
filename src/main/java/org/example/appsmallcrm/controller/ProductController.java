@@ -16,8 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
-
-    private final DashboardStatsService dashboardService;
     private final ProductService productService;
     private final ProductRepo productRepo;
 
