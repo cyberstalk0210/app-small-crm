@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.appsmallcrm.entity.User;
 import org.example.appsmallcrm.repo.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,8 +25,8 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
 
+        String token = request.getHeader("Authorization");
         String path = request.getRequestURI();
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
@@ -33,29 +34,33 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-
-        if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register") ||
-                path.startsWith("/api/products") || path.startsWith("/api/add-product")) {
+        // Public endpointlar
+        if (path.startsWith("/api/auth/login") ||
+                path.startsWith("/api/auth/register") ||
+                path.startsWith("/api/products") ||
+                path.startsWith("/uploads")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         if (token != null && token.startsWith("Bearer ")) {
-
             token = token.substring("Bearer".length()).trim();
-            Long id = Long.valueOf(jwtService.getIdFromAccessToken(token));
 
-            userRepository.findById(id).ifPresent(user -> {
-                UserPrincipal userPrincipal = new UserPrincipal(user);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userPrincipal,
-                                null,
-                                userPrincipal.getAuthorities()
-                        );
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
-            });
+            try {
+                Long id = Long.valueOf(jwtService.getIdFromAccessToken(token));
+                userRepository.findById(id).ifPresent(user -> {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    user,
+                                    null,
+                                    user.getAuthorities()
+                            );
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                });
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);

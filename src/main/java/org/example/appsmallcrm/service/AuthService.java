@@ -5,23 +5,19 @@ import org.example.appsmallcrm.dto.TokenDTO;
 import org.example.appsmallcrm.entity.User;
 import org.example.appsmallcrm.repo.UserRepository;
 import org.example.appsmallcrm.security.JwtService;
-import org.example.appsmallcrm.security.UserPrincipal;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public record AuthService(
-      @Lazy AuthenticationManager authenticationManager,
+        @Lazy AuthenticationManager authenticationManager,
         UserRepository userRepository,
         JwtService jwtService
-){
+) {
 
     public ResponseEntity<TokenDTO> login(LoginDTO loginDTO) {
 
@@ -31,11 +27,10 @@ public record AuthService(
                         loginDTO.getPassword()
                 ));
 
-        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
 
-        String accessToken = jwtService.generateAccessToken(principal.user());
-
-        String refreshToken = jwtService.generateRefreshToken(principal.user());
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
         TokenDTO tokenDTO = TokenDTO.builder()
                 .accessToken(accessToken)
@@ -44,5 +39,4 @@ public record AuthService(
 
         return ResponseEntity.ok(tokenDTO);
     }
-
 }

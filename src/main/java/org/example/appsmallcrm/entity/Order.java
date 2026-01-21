@@ -24,7 +24,8 @@ public class Order {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private String customer;
+    @ManyToOne
+    private User customer;
 
     @Column(name = "date", columnDefinition = "DATE")
     private LocalDate date;

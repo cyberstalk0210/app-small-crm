@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ApiResponse<UserDTO> me() {
+    public ApiResponse<?> me() {
         return userService.me();
     }
 }

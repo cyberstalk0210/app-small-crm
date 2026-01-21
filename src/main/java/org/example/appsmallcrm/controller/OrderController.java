@@ -6,6 +6,7 @@ import org.example.appsmallcrm.entity.Order;
 import org.example.appsmallcrm.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,21 +18,25 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/orders")
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<?> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
+    @GetMapping("/my-orders")
+    public ResponseEntity<?> getMyOrders() {
+        return ResponseEntity.ok(orderService.getMyOrders());
+
+    }
+
+
+
     @PostMapping("/create/order")
-    public ResponseEntity<Order> createOrder(
-            @RequestHeader("Authorization") String token,
+    public ResponseEntity<?> createOrder(
             @RequestBody OrderRequestDTO orderRequest) {
-        if (!token.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).build();
-        }
-        Order order = orderService.createOrder(orderRequest);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderService.createOrder(orderRequest));
+
     }
 }
 

@@ -5,7 +5,19 @@ public record ApiResponse<T>(
         String message,
         T data
 ) {
-    public static ApiResponse<UserDTO> success(UserDTO dto) {
+    public static ApiResponse<?> success(UserDTO dto) {
         return new ApiResponse<>(true, "Operation successful", dto);
+    }
+
+    public ApiResponse(T data, boolean success) {
+        this(success, "", data);
+    }
+
+    public ApiResponse(boolean success) {
+        this(success, "", null);
+    }
+
+    public ApiResponse(T data) {
+        this(false, "", data);
     }
 }

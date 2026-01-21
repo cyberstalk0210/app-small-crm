@@ -25,4 +25,11 @@ public class Sale {
     private LocalDate soldDate;
     private Double revenue;
     private Integer quantity;
+
+    public Sale(Product product, LocalDate soldDate, Double revenue, Integer quantity) {
+        this.product = product;
+        this.soldDate = soldDate;
+        this.revenue = revenue;
+        this.quantity = quantity;
+    }
 }

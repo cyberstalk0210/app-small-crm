@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.example.appsmallcrm.dto.ApiResponse;
 import org.example.appsmallcrm.dto.UserDTO;
 import org.example.appsmallcrm.entity.User;
+import org.example.appsmallcrm.entity.enums.Roles;
 import org.example.appsmallcrm.mapper.UserMapper;
 import org.example.appsmallcrm.repo.UserRepository;
-import org.example.appsmallcrm.security.UserPrincipal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Set;
 
 
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class UserService {
         User user = userMapper.toEntity(userDTO);
         user.setPassword(encodedPassword);
         user.setUsername(userDTO.getUsername());
-        user.setRole("ROLE_USER");
+        user.setRoles(Set.of(Roles.ROLE_USER));
 
         userRepository.save(user);
 
@@ -51,7 +52,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         user.setUsername(userDTO.getUsername());
-        user.setRole(userDTO.getRole());
+        user.setRoles(userDTO.getRoles());
 
         userRepository.saveAndFlush(user);
         return ResponseEntity.ok(user);
@@ -75,9 +76,9 @@ public class UserService {
         return userRepository.findByUsername(userDTO.getUsername()).map(user -> userMapper.toDto(user)).orElse(null);
     }
 
-    public ApiResponse<UserDTO> me() {
+    public ApiResponse<?> me() {
 
-        User user = ((UserPrincipal) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).user();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return ApiResponse.success(userMapper.toDto(user));
 
